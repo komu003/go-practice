@@ -1,9 +1,9 @@
 package main
 
 import (
+	"app/handlers"
 	"log"
 	"net/http"
-	"app/handlers"
 )
 
 func main() {
