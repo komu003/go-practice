@@ -2,9 +2,9 @@ version: '3.8'
 services:
   go:
     image: golang:latest
-    working_dir: /app
+    working_dir: /go
     volumes:
-      - ./app:/app
+      - ./go:/go
     ports:
       - "8080:8080"
     environment:
@@ -13,14 +13,14 @@ services:
 
   react:
     image: node:14.18.0
-    working_dir: /frontend
+    working_dir: /react
     volumes:
-      - ./frontend:/frontend
+      - ./react:/react
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-    command: bash -c "cd /frontend && npm start"
+    command: bash -c "cd /react && npm start"
     tty: true
 
   mysql:
