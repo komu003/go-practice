@@ -15,6 +15,6 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*") // CORSを許可する
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") // CORSを許可する
 	json.NewEncoder(w).Encode(response)
 }
