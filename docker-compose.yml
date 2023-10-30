@@ -1,11 +1,37 @@
-version: '3'
+version: '3.8'
 services:
   go:
     image: golang:latest
-    container_name: go
     working_dir: /app
     volumes:
       - ./app:/app
     ports:
       - "8080:8080"
-    command: tail -f /dev/null
+    environment:
+      - GO111MODULE=on
+    tty: true
+
+  react:
+    image: node:14.18.0
+    working_dir: /frontend
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    command: bash -c "cd /frontend && npm start"
+    tty: true
+
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mydatabase
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  mysql_data:
