@@ -1,9 +1,14 @@
 package models
 
+import (
+	"time"
+)
+
 type Micropost struct {
-	ID        int       `db:"id"`
-	Content   string    `db:"content"`
-	UserID    int       `db:"user_id"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	ID        uint      `gorm:"primaryKey;autoIncrement"`
+	Content   string    `gorm:"type:text;not null"`
+	UserID    uint      `gorm:"index;not null"`
+	CreatedAt time.Time `gorm:"autoCreateTime"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	User      User      `gorm:"foreignKey:UserID"`
 }

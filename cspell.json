@@ -6,7 +6,9 @@
     "words": [],
     "ignoreWords": [
         "micropost",
-        "microposts"
+        "microposts",
+        "gorm",
+        "varchar"
     ],
     "import": []
 }
