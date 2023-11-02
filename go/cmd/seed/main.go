@@ -12,16 +12,7 @@ func main() {
 	if err := db.InitDatabase(); err != nil {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}
-
-	// Micropostテーブルのデータを削除
-	if err := db.DB.Exec("DELETE FROM microposts").Error; err != nil {
-		log.Fatalf("Micropostテーブルのデータ削除エラー: %v", err)
-	}
-
-	// Userテーブルのデータを削除
-	if err := db.DB.Exec("DELETE FROM users").Error; err != nil {
-		log.Fatalf("Userテーブルのデータ削除エラー: %v", err)
-	}
+	fmt.Println("データベースに接続しました")
 
 	for i := 1; i <= 3; i++ {
 		user := models.User{
