@@ -3,7 +3,7 @@ package handlers
 import (
 	"app/models"
 	"app/pkg/db"
-	"encoding/json"
+	"app/pkg/utils"
 	"net/http"
 )
 
@@ -21,7 +21,5 @@ func MicropostsCountHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := MicropostsCountResponse{Count: int(count)}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	json.NewEncoder(w).Encode(response)
+	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
