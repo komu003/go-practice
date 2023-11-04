@@ -12,7 +12,8 @@ func main() {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}
 
-	http.HandleFunc("/api/hello", handlers.HelloHandler)
+	http.HandleFunc("/api/users/count", handlers.UsersCountHandler)
+	http.HandleFunc("/api/microposts/count", handlers.MicropostsCountHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
