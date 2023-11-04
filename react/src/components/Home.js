@@ -9,9 +9,16 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchUsersCountPromise = axios.get('http://localhost:8080/api/users/count');
+    const fetchMicropostsCountPromise = axios.get('http://localhost:8080/api/microposts/count');
+    const loadingDelayPromise = new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+
     Promise.all([
-      axios.get('http://localhost:8080/api/users/count'),
-      axios.get('http://localhost:8080/api/microposts/count')
+      fetchUsersCountPromise,
+      fetchMicropostsCountPromise,
+      loadingDelayPromise
     ])
     .then(([usersResponse, micropostsResponse]) => {
       setUsersCount(usersResponse.data.count);
