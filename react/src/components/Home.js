@@ -3,40 +3,49 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import LoadingIndicator from './LoadingIndicator';
 
+const fetchData = (endpoint, timeout) =>
+  axios.get(`http://localhost:8080/api/${endpoint}/count`, { timeout });
+
 const Home = () => {
-  const [usersCount, setUsersCount] = useState(0);
-  const [micropostsCount, setMicropostsCount] = useState(0);
+  const [usersCount, setUsersCount] = useState(null);
+  const [micropostsCount, setMicropostsCount] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    const fetchUsersCountPromise = axios.get('http://localhost:8080/api/users/count');
-    const fetchMicropostsCountPromise = axios.get('http://localhost:8080/api/microposts/count');
-    const loadingDelayPromise = new Promise((resolve) => {
-      setTimeout(resolve, 500);
-    });
+    const promises = [
+      fetchData('users', 3000).catch(handleError),
+      fetchData('microposts', 3000).catch(handleError),
+      new Promise((resolve) => setTimeout(resolve, 500)),
+    ];
 
-    Promise.all([
-      fetchUsersCountPromise,
-      fetchMicropostsCountPromise,
-      loadingDelayPromise
-    ])
-    .then(([usersResponse, micropostsResponse]) => {
-      setUsersCount(usersResponse.data.count);
-      setMicropostsCount(micropostsResponse.data.count);
+    Promise.all(promises).then(([usersResponse, micropostsResponse]) => {
+      if (!errorMessage) {
+        setUsersCount(usersResponse?.data?.count);
+        setMicropostsCount(micropostsResponse?.data?.count);
+      }
     })
-    .catch(error => {
-      console.error('データの取得中にエラーが発生しました：', error);
-    })
-    .finally(() => {
-      setLoading(false);
-    });
+    .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function handleError(error) {
+    const message = error.code === 'ECONNABORTED' ? 'timeout' : 'error';
+    setErrorMessage(message);
+    return { data: {} };
+  }
+
+  const displayContent = (content) => {
+    if (loading) return <LoadingIndicator />;
+    if (errorMessage) return errorMessage;
+    return content ?? '0';
+  };
 
   return (
     <div className="App">
       <header className="App-header">
-        <p>ユーザー数：{loading ? <LoadingIndicator /> : usersCount}</p>
-        <p>マイクロポスト数：{loading ? <LoadingIndicator /> : micropostsCount}</p>
+        <p>ユーザー数：{displayContent(usersCount)}</p>
+        <p>マイクロポスト数：{displayContent(micropostsCount)}</p>
         <nav>
           <ul>
             <li><Link to="/users">ユーザー一覧</Link></li>
@@ -46,6 +55,6 @@ const Home = () => {
       </header>
     </div>
   );
-}
+};
 
 export default Home;
