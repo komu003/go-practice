@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import LoadingIndicator from './LoadingIndicator';
+import { API_BASE_URL, DEFAULT_TIMEOUT } from '../config';
 
-const fetchData = (endpoint, timeout) =>
-  axios.get(`http://localhost:8080/api/${endpoint}/count`, { timeout });
+const fetchData = (endpoint) =>
+  axios.get(`${API_BASE_URL}/${endpoint}/count`, { timeout: DEFAULT_TIMEOUT });
 
 const Home = () => {
   const [usersCount, setUsersCount] = useState(null);
@@ -14,8 +15,8 @@ const Home = () => {
 
   useEffect(() => {
     const promises = [
-      fetchData('users', 3000).catch(handleError),
-      fetchData('microposts', 3000).catch(handleError),
+      fetchData('users').catch(handleError),
+      fetchData('microposts').catch(handleError),
       new Promise((resolve) => setTimeout(resolve, 500)),
     ];
 
