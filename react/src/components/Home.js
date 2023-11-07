@@ -4,8 +4,20 @@ import { Link } from 'react-router-dom';
 import LoadingIndicator from './LoadingIndicator';
 import { API_BASE_URL, DEFAULT_TIMEOUT } from '../config';
 
-const fetchData = (endpoint) =>
-  axios.get(`${API_BASE_URL}/${endpoint}/count`, { timeout: DEFAULT_TIMEOUT });
+const fetchData = async (endpoint) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${endpoint}/count`, {
+      timeout: DEFAULT_TIMEOUT,
+    });
+    return { count: response.data.count };
+  } catch (error) {
+    if (error.code === 'ECONNABORTED') {
+      return { error: 'timeout' };
+    } else {
+      return { error: 'error', message: error.message };
+    }
+  }
+};
 
 const Home = () => {
   const [usersCount, setUsersCount] = useState(null);
@@ -14,31 +26,36 @@ const Home = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    const promises = [
-      fetchData('users').catch(handleError),
-      fetchData('microposts').catch(handleError),
-      new Promise((resolve) => setTimeout(resolve, 500)),
-    ];
+    const loadCounts = async () => {
+      try {
+        const usersPromise = fetchData('users');
+        const micropostsPromise = fetchData('microposts');
+        const minimumLoadTimePromise = new Promise(resolve => setTimeout(resolve, 500));
+        const promises = [usersPromise, micropostsPromise, minimumLoadTimePromise];
 
-    Promise.all(promises).then(([usersResponse, micropostsResponse]) => {
-      if (!errorMessage) {
-        setUsersCount(usersResponse?.data?.count);
-        setMicropostsCount(micropostsResponse?.data?.count);
+        const [users, microposts] = await Promise.all(promises);
+        console.log(users)
+
+        setUsersCount(users.count);
+        setMicropostsCount(microposts.count);
+
+        if (users.error || microposts.error) {
+          setErrorMessage(users.error ?? microposts.error)
+        } else {
+          setUsersCount(users.count);
+          setMicropostsCount(microposts.count);
+        }
+      } finally {
+        setLoading(false);
       }
-    })
-    .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    };
 
-  function handleError(error) {
-    const message = error.code === 'ECONNABORTED' ? 'timeout' : 'error';
-    setErrorMessage(message);
-    return { data: {} };
-  }
+    loadCounts();
+  }, []);
 
   const displayContent = (content) => {
     if (loading) return <LoadingIndicator />;
-    if (errorMessage) return errorMessage;
+    if (errorMessage) return <span>Error: {errorMessage}</span>;
     return content ?? '0';
   };
 
