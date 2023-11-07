@@ -27,23 +27,20 @@ const Home = () => {
 
   useEffect(() => {
     const loadCounts = async () => {
-      try {
-        const usersPromise = fetchData('users');
-        const micropostsPromise = fetchData('microposts');
-        const minimumLoadTimePromise = new Promise(resolve => setTimeout(resolve, 500));
-        const promises = [usersPromise, micropostsPromise, minimumLoadTimePromise];
+      const usersPromise = fetchData('users');
+      const micropostsPromise = fetchData('microposts');
+      const minimumLoadTimePromise = new Promise(resolve => setTimeout(resolve, 500));
+      const promises = [usersPromise, micropostsPromise, minimumLoadTimePromise];
 
-        const [users, microposts] = await Promise.all(promises);
+      const [users, microposts] = await Promise.all(promises);
 
-        if (users.error || microposts.error) {
-          setErrorMessage(users.error ?? microposts.error)
-        } else {
-          setUsersCount(users.count);
-          setMicropostsCount(microposts.count);
-        }
-      } finally {
-        setLoading(false);
+      if (users.error || microposts.error) {
+        setErrorMessage(users.error ?? microposts.error)
+      } else {
+        setUsersCount(users.count);
+        setMicropostsCount(microposts.count);
       }
+      setLoading(false);
     };
 
     loadCounts();
