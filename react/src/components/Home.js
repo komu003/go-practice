@@ -34,10 +34,6 @@ const Home = () => {
         const promises = [usersPromise, micropostsPromise, minimumLoadTimePromise];
 
         const [users, microposts] = await Promise.all(promises);
-        console.log(users)
-
-        setUsersCount(users.count);
-        setMicropostsCount(microposts.count);
 
         if (users.error || microposts.error) {
           setErrorMessage(users.error ?? microposts.error)
