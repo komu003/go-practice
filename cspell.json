@@ -8,7 +8,8 @@
         "micropost",
         "microposts",
         "gorm",
-        "varchar"
+        "varchar",
+        "testid"
     ],
     "import": []
 }
