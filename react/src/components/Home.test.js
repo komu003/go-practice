@@ -54,7 +54,7 @@ describe('Home コンポーネント', () => {
   test('エラー時はエラーが表示される', async () => {
     jest.useFakeTimers();
   
-    axios.get.mockImplementation(() => Promise.reject(new Error('Network Error')));
+    axios.get.mockRejectedValue(new Error('Network Error'));
   
     await act(async () => {
       render(
