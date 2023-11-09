@@ -110,7 +110,7 @@ describe('Home コンポーネント', () => {
     await act(async () => {
       jest.advanceTimersByTime(1999);
     });
-    
+
     expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
 
     await act(async () => {
@@ -123,5 +123,23 @@ describe('Home コンポーネント', () => {
     const micropostCountElement = screen.getByText('マイクロポスト数：').closest('p');
     expect(within(micropostCountElement).getByText('Error: timeout')).toBeInTheDocument();
     jest.useRealTimers();
+  });
+
+  test('ユーザー一覧とマイクロポスト一覧へのリンクが存在する', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Home />
+        </MemoryRouter>
+      );
+    });
+  
+    const usersLink = screen.getByRole('link', { name: 'ユーザー一覧' });
+    expect(usersLink).toBeInTheDocument();
+    expect(usersLink).toHaveAttribute('href', '/users');
+  
+    const micropostsLink = screen.getByRole('link', { name: 'マイクロポスト一覧' });
+    expect(micropostsLink).toBeInTheDocument();
+    expect(micropostsLink).toHaveAttribute('href', '/microposts');
   });
 });
