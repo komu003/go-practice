@@ -83,4 +83,45 @@ describe('Home コンポーネント', () => {
     expect(within(micropostCountElement).getByText('Error: error')).toBeInTheDocument();
     jest.useRealTimers();
   });
+
+  test('タイムアウト時はタイムアウトが表示される', async () => {
+    jest.useFakeTimers();
+
+    axios.get.mockImplementation(() =>
+      new Promise((_, reject) => {
+        setTimeout(() => {
+          const error = new Error('Network Error');
+          error.code = 'ECONNABORTED';
+          reject(error);
+        }, 2000);
+      })
+    );
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Home />
+        </MemoryRouter>
+      );
+    });
+  
+    expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+  
+    await act(async () => {
+      jest.advanceTimersByTime(1999);
+    });
+    
+    expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+
+    await act(async () => {
+      jest.advanceTimersByTime(1);
+    });
+
+    expect(screen.queryByTestId('loading-indicator')).toBeNull();
+    const userCountElement = screen.getByText('ユーザー数：').closest('p');
+    expect(within(userCountElement).getByText('Error: timeout')).toBeInTheDocument();
+    const micropostCountElement = screen.getByText('マイクロポスト数：').closest('p');
+    expect(within(micropostCountElement).getByText('Error: timeout')).toBeInTheDocument();
+    jest.useRealTimers();
+  });
 });
