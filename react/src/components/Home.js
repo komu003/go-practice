@@ -55,8 +55,8 @@ const Home = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <p>ユーザー数：{displayContent(usersCount)}</p>
-        <p>マイクロポスト数：{displayContent(micropostsCount)}</p>
+        <p data-testid="user-count">ユーザー数：{displayContent(usersCount)}</p>
+        <p data-testid="micropost-count">マイクロポスト数：{displayContent(micropostsCount)}</p>
         <nav>
           <ul>
             <li><Link to="/users">ユーザー一覧</Link></li>

@@ -77,9 +77,9 @@ describe('Home コンポーネント', () => {
     });
   
     expect(screen.queryByTestId('loading-indicator')).toBeNull();
-    const userCountElement = screen.getByText('ユーザー数：').closest('p');
+    const userCountElement = screen.getByTestId('user-count');
+    const micropostCountElement = screen.getByTestId('micropost-count');
     expect(within(userCountElement).getByText('Error: error')).toBeInTheDocument();
-    const micropostCountElement = screen.getByText('マイクロポスト数：').closest('p');
     expect(within(micropostCountElement).getByText('Error: error')).toBeInTheDocument();
     jest.useRealTimers();
   });
@@ -118,9 +118,9 @@ describe('Home コンポーネント', () => {
     });
 
     expect(screen.queryByTestId('loading-indicator')).toBeNull();
-    const userCountElement = screen.getByText('ユーザー数：').closest('p');
+    const userCountElement = screen.getByTestId('user-count');
+    const micropostCountElement = screen.getByTestId('micropost-count');
     expect(within(userCountElement).getByText('Error: timeout')).toBeInTheDocument();
-    const micropostCountElement = screen.getByText('マイクロポスト数：').closest('p');
     expect(within(micropostCountElement).getByText('Error: timeout')).toBeInTheDocument();
     jest.useRealTimers();
   });
