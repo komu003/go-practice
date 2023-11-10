@@ -14,7 +14,7 @@ describe('Home コンポーネント', () => {
     beforeEach(() => {
       jest.useFakeTimers();
     });
-  
+
     afterEach(() => {
       jest.useRealTimers();
     });
@@ -39,21 +39,30 @@ describe('Home コンポーネント', () => {
         );
       });
 
-      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+      let userCountElement = screen.getByTestId('user-count');
+      let micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
+      expect(within(micropostCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
 
       await act(async () => {
         jest.advanceTimersByTime(499);
       });
 
-      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+      userCountElement = screen.getByTestId('user-count');
+      micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
+      expect(within(micropostCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
 
       await act(async () => {
         jest.advanceTimersByTime(1);
       });
 
-      expect(screen.queryByTestId('loading-indicator')).toBeNull();
-      expect(screen.getByText('ユーザー数：10')).toBeInTheDocument();
-      expect(screen.getByText('マイクロポスト数：5')).toBeInTheDocument();
+      userCountElement = screen.getByTestId('user-count');
+      micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).queryByTestId('loading-indicator')).toBeNull();
+      expect(within(micropostCountElement).queryByTestId('loading-indicator')).toBeNull();
+      expect(within(userCountElement).getByText(/10/)).toBeInTheDocument();
+      expect(within(micropostCountElement).getByText(/5/)).toBeInTheDocument();
     });
 
     test('エラー時はエラーが表示される', async () => {
@@ -67,21 +76,28 @@ describe('Home コンポーネント', () => {
         );
       });
 
-      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+      let userCountElement = screen.getByTestId('user-count');
+      let micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
+      expect(within(micropostCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
 
       await act(async () => {
         jest.advanceTimersByTime(499);
       });
 
-      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+      userCountElement = screen.getByTestId('user-count');
+      micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
+      expect(within(micropostCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
 
       await act(async () => {
         jest.advanceTimersByTime(1);
       });
 
-      expect(screen.queryByTestId('loading-indicator')).toBeNull();
-      const userCountElement = screen.getByTestId('user-count');
-      const micropostCountElement = screen.getByTestId('micropost-count');
+      userCountElement = screen.getByTestId('user-count');
+      micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).queryByTestId('loading-indicator')).toBeNull();
+      expect(within(micropostCountElement).queryByTestId('loading-indicator')).toBeNull();
       expect(within(userCountElement).getByText(/Error:error/)).toBeInTheDocument();
       expect(within(micropostCountElement).getByText(/Error:error/)).toBeInTheDocument();
     });
@@ -103,21 +119,28 @@ describe('Home コンポーネント', () => {
         );
       });
 
-      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+      let userCountElement = screen.getByTestId('user-count');
+      let micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
+      expect(within(micropostCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
 
       await act(async () => {
         jest.advanceTimersByTime(1999);
       });
 
-      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+      userCountElement = screen.getByTestId('user-count');
+      micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
+      expect(within(micropostCountElement).getByTestId('loading-indicator')).toBeInTheDocument();
 
       await act(async () => {
         jest.advanceTimersByTime(1);
       });
 
-      expect(screen.queryByTestId('loading-indicator')).toBeNull();
-      const userCountElement = screen.getByTestId('user-count');
-      const micropostCountElement = screen.getByTestId('micropost-count');
+      userCountElement = screen.getByTestId('user-count');
+      micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).queryByTestId('loading-indicator')).toBeNull();
+      expect(within(micropostCountElement).queryByTestId('loading-indicator')).toBeNull();
       expect(within(userCountElement).getByText(/Error:timeout/)).toBeInTheDocument();
       expect(within(micropostCountElement).getByText(/Error:timeout/)).toBeInTheDocument();
     });
