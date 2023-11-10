@@ -10,117 +10,117 @@ import { API_BASE_URL } from '../config';
 jest.mock('axios');
 
 describe('Home コンポーネント', () => {
-  test('ユーザー数とマイクロポスト数が表示される', async () => {
-    jest.useFakeTimers();
-
-    axios.get.mockImplementation((url) => {
-      switch (url) {
-        case `${API_BASE_URL}/users/count`:
-          return Promise.resolve({ data: { count: 10 } });
-        case `${API_BASE_URL}/microposts/count`:
-          return Promise.resolve({ data: { count: 5 } });
-        default:
-          throw new Error('not found');
-      }
+  describe('APIの応答に応じた表示のテスト', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+  
+    afterEach(() => {
+      jest.useRealTimers();
     });
 
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>,
-      );
+    test('ユーザー数とマイクロポスト数が表示される', async () => {
+      axios.get.mockImplementation((url) => {
+        switch (url) {
+          case `${API_BASE_URL}/users/count`:
+            return Promise.resolve({ data: { count: 10 } });
+          case `${API_BASE_URL}/microposts/count`:
+            return Promise.resolve({ data: { count: 5 } });
+          default:
+            throw new Error('not found');
+        }
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>,
+        );
+      });
+
+      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+
+      await act(async () => {
+        jest.advanceTimersByTime(499);
+      });
+
+      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+
+      await act(async () => {
+        jest.advanceTimersByTime(1);
+      });
+
+      expect(screen.queryByTestId('loading-indicator')).toBeNull();
+      expect(screen.getByText('ユーザー数：10')).toBeInTheDocument();
+      expect(screen.getByText('マイクロポスト数：5')).toBeInTheDocument();
     });
 
-    expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+    test('エラー時はエラーが表示される', async () => {
+      axios.get.mockRejectedValue(new Error('Network Error'));
 
-    await act(async () => {
-      jest.advanceTimersByTime(499);
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>,
+        );
+      });
+
+      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+
+      await act(async () => {
+        jest.advanceTimersByTime(499);
+      });
+
+      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+
+      await act(async () => {
+        jest.advanceTimersByTime(1);
+      });
+
+      expect(screen.queryByTestId('loading-indicator')).toBeNull();
+      const userCountElement = screen.getByTestId('user-count');
+      const micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).getByText(/Error:error/)).toBeInTheDocument();
+      expect(within(micropostCountElement).getByText(/Error:error/)).toBeInTheDocument();
     });
 
-    expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+    test('タイムアウト時はタイムアウトが表示される', async () => {
+      axios.get.mockImplementation(() => new Promise((_, reject) => {
+        setTimeout(() => {
+          const error = new Error('Network Error');
+          error.code = 'ECONNABORTED';
+          reject(error);
+        }, 2000);
+      }));
 
-    await act(async () => {
-      jest.advanceTimersByTime(1);
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>,
+        );
+      });
+
+      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+
+      await act(async () => {
+        jest.advanceTimersByTime(1999);
+      });
+
+      expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
+
+      await act(async () => {
+        jest.advanceTimersByTime(1);
+      });
+
+      expect(screen.queryByTestId('loading-indicator')).toBeNull();
+      const userCountElement = screen.getByTestId('user-count');
+      const micropostCountElement = screen.getByTestId('micropost-count');
+      expect(within(userCountElement).getByText(/Error:timeout/)).toBeInTheDocument();
+      expect(within(micropostCountElement).getByText(/Error:timeout/)).toBeInTheDocument();
     });
-
-    expect(screen.queryByTestId('loading-indicator')).toBeNull();
-    expect(screen.getByText('ユーザー数：10')).toBeInTheDocument();
-    expect(screen.getByText('マイクロポスト数：5')).toBeInTheDocument();
-
-    jest.useRealTimers();
-  });
-
-  test('エラー時はエラーが表示される', async () => {
-    jest.useFakeTimers();
-
-    axios.get.mockRejectedValue(new Error('Network Error'));
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>,
-      );
-    });
-
-    expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
-
-    await act(async () => {
-      jest.advanceTimersByTime(499);
-    });
-
-    expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
-
-    await act(async () => {
-      jest.advanceTimersByTime(1);
-    });
-
-    expect(screen.queryByTestId('loading-indicator')).toBeNull();
-    const userCountElement = screen.getByTestId('user-count');
-    const micropostCountElement = screen.getByTestId('micropost-count');
-    expect(within(userCountElement).getByText(/Error: error/)).toBeInTheDocument();
-    expect(within(micropostCountElement).getByText(/Error: error/)).toBeInTheDocument();
-    jest.useRealTimers();
-  });
-
-  test('タイムアウト時はタイムアウトが表示される', async () => {
-    jest.useFakeTimers();
-
-    axios.get.mockImplementation(() => new Promise((_, reject) => {
-      setTimeout(() => {
-        const error = new Error('Network Error');
-        error.code = 'ECONNABORTED';
-        reject(error);
-      }, 2000);
-    }));
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>,
-      );
-    });
-
-    expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
-
-    await act(async () => {
-      jest.advanceTimersByTime(1999);
-    });
-
-    expect(screen.getAllByTestId('loading-indicator').length).toBeGreaterThan(0);
-
-    await act(async () => {
-      jest.advanceTimersByTime(1);
-    });
-
-    expect(screen.queryByTestId('loading-indicator')).toBeNull();
-    const userCountElement = screen.getByTestId('user-count');
-    const micropostCountElement = screen.getByTestId('micropost-count');
-    expect(within(userCountElement).getByText(/Error: timeout/)).toBeInTheDocument();
-    expect(within(micropostCountElement).getByText(/Error: timeout/)).toBeInTheDocument();
-    jest.useRealTimers();
   });
 
   test('ユーザー一覧とマイクロポスト一覧へのリンクが存在する', async () => {
