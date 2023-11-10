@@ -1,9 +1,5 @@
 import React from 'react';
 
-const Microposts = () => {
-    return (
-        <div>microposts</div>
-    );
-}
+const Microposts = () => <div>microposts</div>;
 
 export default Microposts;

@@ -13,9 +13,8 @@ const fetchData = async (endpoint) => {
   } catch (error) {
     if (error.code === 'ECONNABORTED') {
       return { error: 'timeout' };
-    } else {
-      return { error: 'error', message: error.message };
     }
+    return { error: 'error', message: error.message };
   }
 };
 
@@ -29,13 +28,17 @@ const Home = () => {
     const loadCounts = async () => {
       const usersPromise = fetchData('users');
       const micropostsPromise = fetchData('microposts');
-      const minimumLoadTimePromise = new Promise(resolve => setTimeout(resolve, 500));
+      const minimumLoadTimePromise = new Promise((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 500);
+      });
       const promises = [usersPromise, micropostsPromise, minimumLoadTimePromise];
 
       const [users, microposts] = await Promise.all(promises);
 
       if (users.error || microposts.error) {
-        setErrorMessage(users.error ?? microposts.error)
+        setErrorMessage(users.error ?? microposts.error);
       } else {
         setUsersCount(users.count);
         setMicropostsCount(microposts.count);
@@ -48,15 +51,28 @@ const Home = () => {
 
   const displayContent = (content) => {
     if (loading) return <LoadingIndicator />;
-    if (errorMessage) return <span>Error: {errorMessage}</span>;
+    if (errorMessage) {
+      return (
+        <span>
+          Error:
+          {errorMessage}
+        </span>
+      );
+    }
     return content ?? '0';
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        <p data-testid="user-count">ユーザー数：{displayContent(usersCount)}</p>
-        <p data-testid="micropost-count">マイクロポスト数：{displayContent(micropostsCount)}</p>
+        <p data-testid="user-count">
+          ユーザー数：
+          {displayContent(usersCount)}
+        </p>
+        <p data-testid="micropost-count">
+          マイクロポスト数：
+          {displayContent(micropostsCount)}
+        </p>
         <nav>
           <ul>
             <li><Link to="/users">ユーザー一覧</Link></li>
