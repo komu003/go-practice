@@ -3,10 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: [
-    'airbnb',
-
-  ],
+  extends: 'airbnb',
   overrides: [
     {
       env: {
@@ -25,10 +22,13 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
-  },
-  settings: {
-    react: {
-      version: 'detect',
-    },
+    'react/function-component-definition': [
+      2,
+      {
+        namedComponents: 'arrow-function',
+        unnamedComponents: 'arrow-function',
+      },
+    ],
+    'react/jsx-filename-extension': [1, { 'extensions': ['.js', '.jsx'] }],
   },
 };
