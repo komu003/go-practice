@@ -63,7 +63,7 @@ const Home = () => {
   };
 
   return (
-    <div className="App">
+    <div data-testid="home">
       <header className="App-header">
         <p data-testid="user-count">
           ユーザー数：
