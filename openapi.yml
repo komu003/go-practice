@@ -6,28 +6,30 @@ paths:
   /api/users/count:
     get:
       summary: ユーザー数を取得
+      description: 登録されているユーザーの総数を返します。
       responses:
         '200':
-          description: 成功
+          description: ユーザー数の取得に成功しました。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CountResponse'
         '500':
-          description: サーバーエラー
+          description: 内部サーバーエラーが発生しました。
 
   /api/microposts/count:
     get:
       summary: マイクロポスト数を取得
+      description: 登録されているマイクロポストの総数を返します。
       responses:
         '200':
-          description: 成功
+          description: マイクロポスト数の取得に成功しました。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CountResponse'
         '500':
-          description: サーバーエラー
+          description: 内部サーバーエラーが発生しました。
 
 components:
   schemas:
@@ -37,3 +39,4 @@ components:
         count:
           type: integer
           example: 123
+          description: カウント数
