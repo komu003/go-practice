@@ -1,0 +1,39 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  version: 1.0.0
+paths:
+  /api/users/count:
+    get:
+      summary: ユーザー数を取得
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        '500':
+          description: サーバーエラー
+
+  /api/microposts/count:
+    get:
+      summary: マイクロポスト数を取得
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        '500':
+          description: サーバーエラー
+
+components:
+  schemas:
+    CountResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123

@@ -9,7 +9,8 @@
         "microposts",
         "gorm",
         "varchar",
-        "testid"
+        "testid",
+        "openapi"
     ],
     "import": []
 }
