@@ -1,37 +1,17 @@
 package main
 
 import (
-	"app/models"
-	"app/ogen"
 	"app/pkg/db"
-	"context"
-	"errors"
+	"app/services"
+	"app/ogen"
 	"log"
 	"net/http"
 )
 
-type goPracticeService struct{}
-
-func (s *goPracticeService) APIMicropostsCountGet(ctx context.Context) (ogen.APIMicropostsCountGetRes, error) {
-	if db.DB == nil {
-		return nil, errors.New("データベース接続が利用できません")
-	}
-	var count int64
-	if err := db.DB.Model(&models.Micropost{}).Count(&count).Error; err != nil {
-		return &ogen.APIMicropostsCountGetInternalServerError{}, err
-	}
-	return &ogen.CountResponse{Count: ogen.NewOptInt(int(count))}, nil
-}
-
-func (s *goPracticeService) APIUsersCountGet(ctx context.Context) (ogen.APIUsersCountGetRes, error) {
-	if db.DB == nil {
-		return nil, errors.New("データベース接続が利用できません")
-	}
-	var count int64
-	if err := db.DB.Model(&models.User{}).Count(&count).Error; err != nil {
-		return &ogen.APIUsersCountGetInternalServerError{}, err
-	}
-	return &ogen.CountResponse{Count: ogen.NewOptInt(int(count))}, nil
+// Handler aggregates all service handlers
+type Handler struct {
+	*services.MicropostService
+	*services.UserService
 }
 
 func main() {
@@ -39,8 +19,12 @@ func main() {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}
 
-	srv := &goPracticeService{}
-	httpServer, err := ogen.NewServer(srv)
+	handler := &Handler{
+		MicropostService: &services.MicropostService{},
+		UserService:      &services.UserService{},
+	}
+
+	httpServer, err := ogen.NewServer(handler)
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
 	}
