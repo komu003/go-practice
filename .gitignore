@@ -1,5 +1,5 @@
 /go/tmp/*
-/go/gen/*
+/go/ogen/*
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
