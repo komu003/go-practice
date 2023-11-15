@@ -10,7 +10,8 @@
         "gorm",
         "varchar",
         "testid",
-        "openapi"
+        "openapi",
+        "ogen"
     ],
     "import": []
 }
