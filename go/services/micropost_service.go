@@ -15,7 +15,7 @@ func (s *MicropostService) APIMicropostsCountGet(ctx context.Context) (ogen.APIM
 		return nil, errors.New("データベース接続が利用できません")
 	}
 	var count int64
-	if err := db.DB.Model(&models.Micropost{}).Count(&count).Error; err != nil {
+	if err := db.DB.WithContext(ctx).Model(&models.Micropost{}).Count(&count).Error; err != nil {
 		return &ogen.APIMicropostsCountGetInternalServerError{}, err
 	}
 	return &ogen.CountResponse{Count: ogen.NewOptInt(int(count))}, nil

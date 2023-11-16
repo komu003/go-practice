@@ -15,7 +15,7 @@ func (s *UserService) APIUsersCountGet(ctx context.Context) (ogen.APIUsersCountG
 		return nil, errors.New("データベース接続が利用できません")
 	}
 	var count int64
-	if err := db.DB.Model(&models.User{}).Count(&count).Error; err != nil {
+	if err := db.DB.WithContext(ctx).Model(&models.User{}).Count(&count).Error; err != nil {
 		return &ogen.APIUsersCountGetInternalServerError{}, err
 	}
 	return &ogen.CountResponse{Count: ogen.NewOptInt(int(count))}, nil
