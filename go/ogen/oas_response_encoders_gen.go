@@ -9,8 +9,6 @@ import (
 	"github.com/go-faster/jx"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
-
-	ht "github.com/ogen-go/ogen/http"
 )
 
 func encodeAPIMicropostsCountGetResponse(response APIMicropostsCountGetRes, w http.ResponseWriter, span trace.Span) error {
@@ -32,25 +30,6 @@ func encodeAPIMicropostsCountGetResponse(response APIMicropostsCountGetRes, w ht
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
 
-		return nil
-
-	case *APIMicropostsCountGetDef:
-		code := response.StatusCode
-		if code == 0 {
-			// Set default status code.
-			code = http.StatusOK
-		}
-		w.WriteHeader(code)
-		st := http.StatusText(code)
-		if code >= http.StatusBadRequest {
-			span.SetStatus(codes.Error, st)
-		} else {
-			span.SetStatus(codes.Ok, st)
-		}
-
-		if code >= http.StatusInternalServerError {
-			return errors.Wrapf(ht.ErrInternalServerErrorResponse, "code: %d, message: %s", code, http.StatusText(code))
-		}
 		return nil
 
 	default:
@@ -77,25 +56,6 @@ func encodeAPIUsersCountGetResponse(response APIUsersCountGetRes, w http.Respons
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
 
-		return nil
-
-	case *APIUsersCountGetDef:
-		code := response.StatusCode
-		if code == 0 {
-			// Set default status code.
-			code = http.StatusOK
-		}
-		w.WriteHeader(code)
-		st := http.StatusText(code)
-		if code >= http.StatusBadRequest {
-			span.SetStatus(codes.Error, st)
-		} else {
-			span.SetStatus(codes.Ok, st)
-		}
-
-		if code >= http.StatusInternalServerError {
-			return errors.Wrapf(ht.ErrInternalServerErrorResponse, "code: %d, message: %s", code, http.StatusText(code))
-		}
 		return nil
 
 	default:

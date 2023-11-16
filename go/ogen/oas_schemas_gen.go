@@ -2,44 +2,10 @@
 
 package ogen
 
-// APIMicropostsCountGetDef is default response for APIMicropostsCountGet operation.
-type APIMicropostsCountGetDef struct {
-	StatusCode int
-}
-
-// GetStatusCode returns the value of StatusCode.
-func (s *APIMicropostsCountGetDef) GetStatusCode() int {
-	return s.StatusCode
-}
-
-// SetStatusCode sets the value of StatusCode.
-func (s *APIMicropostsCountGetDef) SetStatusCode(val int) {
-	s.StatusCode = val
-}
-
-func (*APIMicropostsCountGetDef) aPIMicropostsCountGetRes() {}
-
 // APIMicropostsCountGetInternalServerError is response for APIMicropostsCountGet operation.
 type APIMicropostsCountGetInternalServerError struct{}
 
 func (*APIMicropostsCountGetInternalServerError) aPIMicropostsCountGetRes() {}
-
-// APIUsersCountGetDef is default response for APIUsersCountGet operation.
-type APIUsersCountGetDef struct {
-	StatusCode int
-}
-
-// GetStatusCode returns the value of StatusCode.
-func (s *APIUsersCountGetDef) GetStatusCode() int {
-	return s.StatusCode
-}
-
-// SetStatusCode sets the value of StatusCode.
-func (s *APIUsersCountGetDef) SetStatusCode(val int) {
-	s.StatusCode = val
-}
-
-func (*APIUsersCountGetDef) aPIUsersCountGetRes() {}
 
 // APIUsersCountGetInternalServerError is response for APIUsersCountGet operation.
 type APIUsersCountGetInternalServerError struct{}

@@ -55,16 +55,7 @@ func decodeAPIMicropostsCountGetResponse(resp *http.Response) (res APIMicroposts
 		// Code 500.
 		return &APIMicropostsCountGetInternalServerError{}, nil
 	}
-	// Default response.
-	res, err := func() (res APIMicropostsCountGetRes, err error) {
-		return &APIMicropostsCountGetDef{
-			StatusCode: resp.StatusCode,
-		}, nil
-	}()
-	if err != nil {
-		return res, errors.Wrapf(err, "default (code %d)", resp.StatusCode)
-	}
-	return res, nil
+	return res, validate.UnexpectedStatusCode(resp.StatusCode)
 }
 
 func decodeAPIUsersCountGetResponse(resp *http.Response) (res APIUsersCountGetRes, _ error) {
@@ -108,14 +99,5 @@ func decodeAPIUsersCountGetResponse(resp *http.Response) (res APIUsersCountGetRe
 		// Code 500.
 		return &APIUsersCountGetInternalServerError{}, nil
 	}
-	// Default response.
-	res, err := func() (res APIUsersCountGetRes, err error) {
-		return &APIUsersCountGetDef{
-			StatusCode: resp.StatusCode,
-		}, nil
-	}()
-	if err != nil {
-		return res, errors.Wrapf(err, "default (code %d)", resp.StatusCode)
-	}
-	return res, nil
+	return res, validate.UnexpectedStatusCode(resp.StatusCode)
 }
