@@ -2,13 +2,13 @@ package main
 
 import (
 	"app/pkg/db"
+	"app/pkg/middleware"
 	"app/services"
 	"app/ogen"
 	"log"
 	"net/http"
 )
 
-// Handler aggregates all service handlers
 type GoPracticeService struct {
 	*services.MicropostService
 	*services.UserService
@@ -25,11 +25,12 @@ func main() {
 	}
 
 	httpServer, err := ogen.NewServer(srv)
-	log.Printf("%T\n",httpServer)
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
 	}
 
+	wrappedServer := middleware.CorsMiddleware(httpServer)
+
 	log.Println("Server is running at http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", httpServer))
+	log.Fatal(http.ListenAndServe(":8080", wrappedServer))
 }
