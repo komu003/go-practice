@@ -2,10 +2,10 @@ package services
 
 import (
 	"app/models"
+	"app/ogen"
 	"app/pkg/db"
 	"context"
 	"errors"
-	"app/ogen"
 )
 
 type MicropostService struct{}

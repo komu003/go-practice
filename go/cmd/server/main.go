@@ -1,10 +1,10 @@
 package main
 
 import (
+	"app/ogen"
 	"app/pkg/db"
 	"app/pkg/middleware"
 	"app/services"
-	"app/ogen"
 	"log"
 	"net/http"
 )
