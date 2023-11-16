@@ -9,7 +9,7 @@ import (
 )
 
 // Handler aggregates all service handlers
-type Handler struct {
+type GoPracticeService struct {
 	*services.MicropostService
 	*services.UserService
 }
@@ -19,12 +19,13 @@ func main() {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}
 
-	handler := &Handler{
+	srv := &GoPracticeService{
 		MicropostService: &services.MicropostService{},
 		UserService:      &services.UserService{},
 	}
 
-	httpServer, err := ogen.NewServer(handler)
+	httpServer, err := ogen.NewServer(srv)
+	log.Printf("%T\n",httpServer)
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
 	}
