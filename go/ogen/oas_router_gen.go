@@ -59,41 +59,79 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'm': // Prefix: "microposts/count"
-				if l := len("microposts/count"); len(elem) >= l && elem[0:l] == "microposts/count" {
+			case 'm': // Prefix: "microposts"
+				if l := len("microposts"); len(elem) >= l && elem[0:l] == "microposts" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handleAPIMicropostsCountGetRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleAPIMicropostsGetRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET")
 					}
 
 					return
 				}
-			case 'u': // Prefix: "users/count"
-				if l := len("users/count"); len(elem) >= l && elem[0:l] == "users/count" {
+				switch elem[0] {
+				case '/': // Prefix: "/count"
+					if l := len("/count"); len(elem) >= l && elem[0:l] == "/count" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleAPIMicropostsCountGetRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+				}
+			case 'u': // Prefix: "users"
+				if l := len("users"); len(elem) >= l && elem[0:l] == "users" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handleAPIUsersCountGetRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleAPIUsersGetRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET")
 					}
 
 					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/count"
+					if l := len("/count"); len(elem) >= l && elem[0:l] == "/count" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleAPIUsersCountGetRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
 				}
 			}
 		}
@@ -187,8 +225,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'm': // Prefix: "microposts/count"
-				if l := len("microposts/count"); len(elem) >= l && elem[0:l] == "microposts/count" {
+			case 'm': // Prefix: "microposts"
+				if l := len("microposts"); len(elem) >= l && elem[0:l] == "microposts" {
 					elem = elem[l:]
 				} else {
 					break
@@ -197,11 +235,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						// Leaf: APIMicropostsCountGet
-						r.name = "APIMicropostsCountGet"
-						r.summary = "マイクロポスト数を取得"
+						r.name = "APIMicropostsGet"
+						r.summary = "マイクロポスト一覧を取得"
 						r.operationID = ""
-						r.pathPattern = "/api/microposts/count"
+						r.pathPattern = "/api/microposts"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -209,8 +246,32 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						return
 					}
 				}
-			case 'u': // Prefix: "users/count"
-				if l := len("users/count"); len(elem) >= l && elem[0:l] == "users/count" {
+				switch elem[0] {
+				case '/': // Prefix: "/count"
+					if l := len("/count"); len(elem) >= l && elem[0:l] == "/count" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							// Leaf: APIMicropostsCountGet
+							r.name = "APIMicropostsCountGet"
+							r.summary = "マイクロポスト数を取得"
+							r.operationID = ""
+							r.pathPattern = "/api/microposts/count"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+				}
+			case 'u': // Prefix: "users"
+				if l := len("users"); len(elem) >= l && elem[0:l] == "users" {
 					elem = elem[l:]
 				} else {
 					break
@@ -219,16 +280,39 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						// Leaf: APIUsersCountGet
-						r.name = "APIUsersCountGet"
-						r.summary = "ユーザー数を取得"
+						r.name = "APIUsersGet"
+						r.summary = "ユーザー一覧を取得"
 						r.operationID = ""
-						r.pathPattern = "/api/users/count"
+						r.pathPattern = "/api/users"
 						r.args = args
 						r.count = 0
 						return r, true
 					default:
 						return
+					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/count"
+					if l := len("/count"); len(elem) >= l && elem[0:l] == "/count" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							// Leaf: APIUsersCountGet
+							r.name = "APIUsersCountGet"
+							r.summary = "ユーザー数を取得"
+							r.operationID = ""
+							r.pathPattern = "/api/users/count"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
 					}
 				}
 			}

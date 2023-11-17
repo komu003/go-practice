@@ -5,6 +5,14 @@ type APIMicropostsCountGetRes interface {
 	aPIMicropostsCountGetRes()
 }
 
+type APIMicropostsGetRes interface {
+	aPIMicropostsGetRes()
+}
+
 type APIUsersCountGetRes interface {
 	aPIUsersCountGetRes()
+}
+
+type APIUsersGetRes interface {
+	aPIUsersGetRes()
 }

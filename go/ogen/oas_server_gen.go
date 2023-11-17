@@ -14,12 +14,24 @@ type Handler interface {
 	//
 	// GET /api/microposts/count
 	APIMicropostsCountGet(ctx context.Context) (APIMicropostsCountGetRes, error)
+	// APIMicropostsGet implements GET /api/microposts operation.
+	//
+	// 登録されているすべてのマイクロポストの一覧を返します。.
+	//
+	// GET /api/microposts
+	APIMicropostsGet(ctx context.Context) (APIMicropostsGetRes, error)
 	// APIUsersCountGet implements GET /api/users/count operation.
 	//
 	// 登録されているユーザーの総数を返します。.
 	//
 	// GET /api/users/count
 	APIUsersCountGet(ctx context.Context) (APIUsersCountGetRes, error)
+	// APIUsersGet implements GET /api/users operation.
+	//
+	// 登録されているすべてのユーザーの一覧を返します。.
+	//
+	// GET /api/users
+	APIUsersGet(ctx context.Context) (APIUsersGetRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

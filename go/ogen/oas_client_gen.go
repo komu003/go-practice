@@ -27,12 +27,24 @@ type Invoker interface {
 	//
 	// GET /api/microposts/count
 	APIMicropostsCountGet(ctx context.Context) (APIMicropostsCountGetRes, error)
+	// APIMicropostsGet invokes GET /api/microposts operation.
+	//
+	// 登録されているすべてのマイクロポストの一覧を返します。.
+	//
+	// GET /api/microposts
+	APIMicropostsGet(ctx context.Context) (APIMicropostsGetRes, error)
 	// APIUsersCountGet invokes GET /api/users/count operation.
 	//
 	// 登録されているユーザーの総数を返します。.
 	//
 	// GET /api/users/count
 	APIUsersCountGet(ctx context.Context) (APIUsersCountGetRes, error)
+	// APIUsersGet invokes GET /api/users operation.
+	//
+	// 登録されているすべてのユーザーの一覧を返します。.
+	//
+	// GET /api/users
+	APIUsersGet(ctx context.Context) (APIUsersGetRes, error)
 }
 
 // Client implements OAS client.
@@ -154,6 +166,77 @@ func (c *Client) sendAPIMicropostsCountGet(ctx context.Context) (res APIMicropos
 	return result, nil
 }
 
+// APIMicropostsGet invokes GET /api/microposts operation.
+//
+// 登録されているすべてのマイクロポストの一覧を返します。.
+//
+// GET /api/microposts
+func (c *Client) APIMicropostsGet(ctx context.Context) (APIMicropostsGetRes, error) {
+	res, err := c.sendAPIMicropostsGet(ctx)
+	return res, err
+}
+
+func (c *Client) sendAPIMicropostsGet(ctx context.Context) (res APIMicropostsGetRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/api/microposts"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "APIMicropostsGet",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/api/microposts"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeAPIMicropostsGetResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // APIUsersCountGet invokes GET /api/users/count operation.
 //
 // 登録されているユーザーの総数を返します。.
@@ -218,6 +301,77 @@ func (c *Client) sendAPIUsersCountGet(ctx context.Context) (res APIUsersCountGet
 
 	stage = "DecodeResponse"
 	result, err := decodeAPIUsersCountGetResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// APIUsersGet invokes GET /api/users operation.
+//
+// 登録されているすべてのユーザーの一覧を返します。.
+//
+// GET /api/users
+func (c *Client) APIUsersGet(ctx context.Context) (APIUsersGetRes, error) {
+	res, err := c.sendAPIUsersGet(ctx)
+	return res, err
+}
+
+func (c *Client) sendAPIUsersGet(ctx context.Context) (res APIUsersGetRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/api/users"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "APIUsersGet",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/api/users"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeAPIUsersGetResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

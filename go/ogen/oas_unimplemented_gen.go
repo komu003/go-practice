@@ -22,11 +22,29 @@ func (UnimplementedHandler) APIMicropostsCountGet(ctx context.Context) (r APIMic
 	return r, ht.ErrNotImplemented
 }
 
+// APIMicropostsGet implements GET /api/microposts operation.
+//
+// 登録されているすべてのマイクロポストの一覧を返します。.
+//
+// GET /api/microposts
+func (UnimplementedHandler) APIMicropostsGet(ctx context.Context) (r APIMicropostsGetRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // APIUsersCountGet implements GET /api/users/count operation.
 //
 // 登録されているユーザーの総数を返します。.
 //
 // GET /api/users/count
 func (UnimplementedHandler) APIUsersCountGet(ctx context.Context) (r APIUsersCountGetRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// APIUsersGet implements GET /api/users operation.
+//
+// 登録されているすべてのユーザーの一覧を返します。.
+//
+// GET /api/users
+func (UnimplementedHandler) APIUsersGet(ctx context.Context) (r APIUsersGetRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

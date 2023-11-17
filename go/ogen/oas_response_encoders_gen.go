@@ -37,6 +37,32 @@ func encodeAPIMicropostsCountGetResponse(response APIMicropostsCountGetRes, w ht
 	}
 }
 
+func encodeAPIMicropostsGetResponse(response APIMicropostsGetRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *APIMicropostsGetOKApplicationJSON:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *APIMicropostsGetInternalServerError:
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
 func encodeAPIUsersCountGetResponse(response APIUsersCountGetRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *CountResponse:
@@ -53,6 +79,32 @@ func encodeAPIUsersCountGetResponse(response APIUsersCountGetRes, w http.Respons
 		return nil
 
 	case *APIUsersCountGetInternalServerError:
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
+func encodeAPIUsersGetResponse(response APIUsersGetRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *APIUsersGetOKApplicationJSON:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *APIUsersGetInternalServerError:
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
 
