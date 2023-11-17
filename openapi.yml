@@ -31,6 +31,38 @@ paths:
         '500':
           description: 内部サーバーエラーが発生しました。
 
+  /api/users:
+    get:
+      summary: ユーザー一覧を取得
+      description: 登録されているすべてのユーザーの一覧を返します。
+      responses:
+        '200':
+          description: ユーザー一覧の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: 内部サーバーエラーが発生しました。
+
+  /api/microposts:
+    get:
+      summary: マイクロポスト一覧を取得
+      description: 登録されているすべてのマイクロポストの一覧を返します。
+      responses:
+        '200':
+          description: マイクロポスト一覧の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Micropost'
+        '500':
+          description: 内部サーバーエラーが発生しました。
+
 components:
   schemas:
     CountResponse:
@@ -40,3 +72,57 @@ components:
           type: integer
           example: 123
           description: カウント数
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ユーザーのID
+          example: 1
+        name:
+          type: string
+          description: ユーザーの名前
+          example: "山田太郎"
+        email:
+          type: string
+          format: email
+          description: ユーザーのメールアドレス
+          example: "yamada@example.com"
+        createdAt:
+          type: string
+          format: date-time
+          description: アカウントの作成日時
+          example: "2021-01-01T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: アカウントの更新日時
+          example: "2021-06-01T15:00:00Z"
+
+    Micropost:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: マイクロポストのID
+          example: 101
+        content:
+          type: string
+          description: マイクロポストの内容
+          example: "これはサンプルのマイクロポストです。"
+        userId:
+          type: integer
+          description: 作成したユーザーのID
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          description: マイクロポストの作成日時
+          example: "2021-01-02T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: マイクロポストの更新日時
+          example: "2021-06-02T18:00:00Z"
+        user:
+          $ref: '#/components/schemas/User'
