@@ -4,6 +4,7 @@ import (
 	"app/ogen"
 	"app/pkg/db"
 	"app/pkg/middleware"
+	"app/pkg/repository"
 	"app/services"
 	"log"
 	"net/http"
@@ -20,7 +21,7 @@ func main() {
 	}
 
 	srv := &GoPracticeService{
-		MicropostService: &services.MicropostService{},
+		MicropostService: services.NewMicropostService(repository.NewGormMicropostRepository()),
 		UserService:      &services.UserService{},
 	}
 
