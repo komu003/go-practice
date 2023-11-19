@@ -1,18 +1,25 @@
 package services
 
 import (
-	"app/models"
 	"app/ogen"
-	"app/pkg/db"
+	"app/pkg/repository"
 	"context"
 	"fmt"
 )
 
-type UserService struct{}
+type UserService struct {
+	repo repository.UserRepository
+}
+
+func NewUserService(repo repository.UserRepository) *UserService {
+	return &UserService{
+		repo: repo,
+	}
+}
 
 func (s *UserService) APIUsersGet(ctx context.Context) (ogen.APIUsersGetRes, error) {
-	var users []models.User
-	if err := db.DB.WithContext(ctx).Find(&users).Error; err != nil {
+	users, err := s.repo.GetUsers(ctx)
+	if err != nil {
 		errMsg := fmt.Errorf("データベースからのユーザー一覧の取得に失敗しました: %w", err)
 		return &ogen.APIUsersGetInternalServerError{}, errMsg
 	}
@@ -32,8 +39,8 @@ func (s *UserService) APIUsersGet(ctx context.Context) (ogen.APIUsersGetRes, err
 }
 
 func (s *UserService) APIUsersCountGet(ctx context.Context) (ogen.APIUsersCountGetRes, error) {
-	var count int64
-	if err := db.DB.WithContext(ctx).Model(&models.User{}).Count(&count).Error; err != nil {
+	count, err := s.repo.CountUsers(ctx)
+	if err != nil {
 		errMsg := fmt.Errorf("データベースからのユーザー数の取得に失敗しました: %w", err)
 		return &ogen.APIUsersCountGetInternalServerError{}, errMsg
 	}

@@ -22,7 +22,7 @@ func main() {
 
 	srv := &GoPracticeService{
 		MicropostService: services.NewMicropostService(repository.NewGormMicropostRepository()),
-		UserService:      &services.UserService{},
+		UserService:      services.NewUserService(repository.NewGormUserRepository()),
 	}
 
 	httpServer, err := ogen.NewServer(srv)
