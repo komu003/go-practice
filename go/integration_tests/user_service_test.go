@@ -1,14 +1,14 @@
 package integration_tests
 
 import (
-	"github.com/stretchr/testify/assert"
+	// "github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestAPIUsersGetIntegration(t *testing.T) {
-	assert.True(t, true, "必ず成功するテスト")
+	t.Skip("未実装")
 }
 
 func TestAPIUsersCountGetIntegration(t *testing.T) {
-	assert.True(t, true, "必ず成功するテスト")
+	t.Skip("未実装")
 }
