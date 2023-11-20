@@ -21,8 +21,8 @@ func main() {
 	}
 
 	srv := &GoPracticeService{
-		MicropostService: services.NewMicropostService(repository.NewGormMicropostRepository()),
-		UserService:      services.NewUserService(repository.NewGormUserRepository()),
+		MicropostService: services.NewMicropostService(repository.NewGormMicropostRepository(db.DB)),
+		UserService:      services.NewUserService(repository.NewGormUserRepository(db.DB)),
 	}
 
 	httpServer, err := ogen.NewServer(srv)
