@@ -2,7 +2,12 @@ package integration_tests
 
 import (
 	"app/models"
+	"app/ogen"
+	"app/pkg/repository"
+	"app/services"
+	"context"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -11,17 +16,18 @@ func TestAPIUsersGetIntegration(t *testing.T) {
 }
 
 func TestAPIUsersCountGetIntegration(t *testing.T) {
+	userRepo := repository.NewGormUserRepository(db)
+	userService := services.NewUserService(userRepo)
+
 	err := db.Create(&models.User{Name: "テストユーザー1", Email: "test1@example.com"}).Error
-	if err != nil {
-		t.Fatalf("テストデータの挿入に失敗しました: %v", err)
-	}
+	require.NoError(t, err, "テストデータの挿入に失敗しました")
 
-	var count int64
-	err = db.Model(&models.User{}).Count(&count).Error
-	if err != nil {
-		t.Fatalf("データのカウントに失敗しました: %v", err)
-	}
-	assert.Equal(t, int64(1), count, "ユーザー数が期待と異なります")
+	ctx := context.Background()
+	res, err := userService.APIUsersCountGet(ctx)
+	require.NoError(t, err, "APIUsersCountGetの呼び出しに失敗しました")
 
-	t.Skip("実装不十分")
+	countResponse, ok := res.(*ogen.CountResponse)
+	require.True(t, ok, "レスポンスタイプが期待と異なります")
+
+	assert.Equal(t, int64(1), int64(countResponse.Count.Value), "ユーザー数が期待と異なります")
 }
