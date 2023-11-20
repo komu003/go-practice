@@ -19,8 +19,11 @@ func TestAPIUsersCountGetIntegration(t *testing.T) {
 	userRepo := repository.NewGormUserRepository(db)
 	userService := services.NewUserService(userRepo)
 
-	err := db.Create(&models.User{Name: "テストユーザー1", Email: "test1@example.com"}).Error
+	testUser := &models.User{Name: "テストユーザー1", Email: "test1@example.com"}
+	err := db.Create(testUser).Error
 	require.NoError(t, err, "テストデータの挿入に失敗しました")
+
+	defer db.Delete(testUser)
 
 	ctx := context.Background()
 	res, err := userService.APIUsersCountGet(ctx)
