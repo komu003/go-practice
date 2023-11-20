@@ -4,14 +4,14 @@
     "dictionaryDefinitions": [],
     "dictionaries": [],
     "words": [
-        "stretchr",
+        "gorm",
         "micropost",
         "microposts",
-        "gorm",
-        "varchar",
-        "testid",
-        "openapi",
         "ogen",
+        "openapi",
+        "stretchr",
+        "testid",
+        "varchar"
     ],
     "import": []
 }
