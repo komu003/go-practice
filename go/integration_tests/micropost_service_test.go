@@ -1,8 +1,8 @@
 package integration_tests
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestAPIMicropostsGetIntegration(t *testing.T) {
