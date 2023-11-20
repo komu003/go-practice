@@ -3,15 +3,27 @@ package integration_tests
 
 import (
 	"app/models"
-	"log"
-	"os"
-	"testing"
-
+	"app/ogen"
+	"app/pkg/middleware"
+	"app/pkg/repository"
+	"app/services"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"log"
+	"net/http/httptest"
+	"os"
+	"testing"
 )
 
-var db *gorm.DB
+var (
+	db       *gorm.DB
+	testHTTP *httptest.Server
+)
+
+type GoPracticeService struct {
+	*services.MicropostService
+	*services.UserService
+}
 
 func TestMain(m *testing.M) {
 	var err error
@@ -25,7 +37,22 @@ func TestMain(m *testing.M) {
 		log.Fatalf("マイグレーションに失敗しました: %v", err)
 	}
 
+	srv := &GoPracticeService{
+		MicropostService: services.NewMicropostService(repository.NewGormMicropostRepository(db)),
+		UserService:      services.NewUserService(repository.NewGormUserRepository(db)),
+	}
+
+	httpServer, err := ogen.NewServer(srv)
+	if err != nil {
+		log.Fatalf("Failed to create server: %v", err)
+	}
+
+	wrappedServer := middleware.CorsMiddleware(httpServer)
+
+	testHTTP = httptest.NewServer(wrappedServer)
+
 	code := m.Run()
 
+	testHTTP.Close()
 	os.Exit(code)
 }

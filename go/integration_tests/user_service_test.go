@@ -2,13 +2,13 @@ package integration_tests
 
 import (
 	"app/models"
-	"app/ogen"
-	"app/pkg/repository"
-	"app/services"
-	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestAPIUsersGetIntegration(t *testing.T) {
@@ -16,21 +16,23 @@ func TestAPIUsersGetIntegration(t *testing.T) {
 }
 
 func TestAPIUsersCountGetIntegration(t *testing.T) {
-	userRepo := repository.NewGormUserRepository(db)
-	userService := services.NewUserService(userRepo)
-
 	testUser := &models.User{Name: "テストユーザー1", Email: "test1@example.com"}
 	err := db.Create(testUser).Error
 	require.NoError(t, err, "テストデータの挿入に失敗しました")
-
 	defer db.Delete(testUser)
 
-	ctx := context.Background()
-	res, err := userService.APIUsersCountGet(ctx)
-	require.NoError(t, err, "APIUsersCountGetの呼び出しに失敗しました")
+	url := fmt.Sprintf("%s/api/users/count", testHTTP.URL)
+	res, err := http.Get(url)
+	require.NoError(t, err, "HTTPリクエストの送信に失敗しました")
+	defer res.Body.Close()
 
-	countResponse, ok := res.(*ogen.CountResponse)
-	require.True(t, ok, "レスポンスタイプが期待と異なります")
+	var countResponse struct {
+		Count int64 `json:"count"`
+	}
 
-	assert.Equal(t, int64(1), int64(countResponse.Count.Value), "ユーザー数が期待と異なります")
+	err = json.NewDecoder(res.Body).Decode(&countResponse)
+	require.NoError(t, err, "レスポンスのデコードに失敗しました")
+
+	assert.Equal(t, http.StatusOK, res.StatusCode, "HTTPステータスコードが期待と異なります")
+	assert.Equal(t, int64(1), countResponse.Count, "ユーザー数が期待と異なります")
 }
