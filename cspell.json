@@ -4,16 +4,14 @@
     "dictionaryDefinitions": [],
     "dictionaries": [],
     "words": [
-        "stretchr"
-    ],
-    "ignoreWords": [
+        "stretchr",
         "micropost",
         "microposts",
         "gorm",
         "varchar",
         "testid",
         "openapi",
-        "ogen"
+        "ogen",
     ],
     "import": []
 }
