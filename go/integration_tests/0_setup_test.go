@@ -20,11 +20,6 @@ var (
 	testHTTP *httptest.Server
 )
 
-type GoPracticeService struct {
-	*services.MicropostService
-	*services.UserService
-}
-
 func TestMain(m *testing.M) {
 	var err error
 	db, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
@@ -37,10 +32,10 @@ func TestMain(m *testing.M) {
 		log.Fatalf("マイグレーションに失敗しました: %v", err)
 	}
 
-	srv := &GoPracticeService{
-		MicropostService: services.NewMicropostService(repository.NewGormMicropostRepository(db)),
-		UserService:      services.NewUserService(repository.NewGormUserRepository(db)),
-	}
+	srv := services.NewGoPracticeService(
+		repository.NewGormMicropostRepository(db),
+		repository.NewGormUserRepository(db),
+	)
 
 	httpServer, err := ogen.NewServer(srv)
 	if err != nil {
