@@ -10,20 +10,15 @@ import (
 	"net/http"
 )
 
-type GoPracticeService struct {
-	*services.MicropostService
-	*services.UserService
-}
-
 func main() {
 	if err := db.InitDatabase(); err != nil {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}
 
-	srv := &GoPracticeService{
-		MicropostService: services.NewMicropostService(repository.NewGormMicropostRepository(db.DB)),
-		UserService:      services.NewUserService(repository.NewGormUserRepository(db.DB)),
-	}
+	srv := services.NewGoPracticeService(
+		repository.NewGormMicropostRepository(db.DB),
+		repository.NewGormUserRepository(db.DB),
+	)
 
 	httpServer, err := ogen.NewServer(srv)
 	if err != nil {
