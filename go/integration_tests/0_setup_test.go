@@ -1,4 +1,3 @@
-// setup_test.go
 package integration_tests
 
 import (
@@ -7,7 +6,7 @@ import (
 	"app/pkg/middleware"
 	"app/pkg/repository"
 	"app/services"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 	"net/http/httptest"
@@ -22,7 +21,9 @@ var (
 
 func TestMain(m *testing.M) {
 	var err error
-	db, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+
+	dsn := "root:rootpassword@tcp(mysql)/test_mydatabase?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("データベースへの接続に失敗しました: %v", err)
 	}
