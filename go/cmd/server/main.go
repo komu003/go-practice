@@ -17,6 +17,7 @@ func main() {
 	if err := db.InitDatabase(); err != nil {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}
+	log.Println("データベースに接続しました")
 
 	srv := services.NewGoPracticeService(
 		repository.NewGormMicropostRepository(db.DB),
