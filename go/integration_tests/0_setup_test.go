@@ -1,13 +1,13 @@
 package integration_tests
 
 import (
+	"app/config"
 	"app/models"
 	"app/ogen"
+	"app/pkg/db"
 	"app/pkg/middleware"
 	"app/pkg/repository"
 	"app/services"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 	"log"
 	"net/http/httptest"
 	"os"
@@ -15,27 +15,25 @@ import (
 )
 
 var (
-	db       *gorm.DB
 	testHTTP *httptest.Server
 )
 
 func TestMain(m *testing.M) {
-	var err error
+	os.Setenv("ENV", "test")
+	config.InitConfig()
 
-	dsn := "root:rootpassword@tcp(mysql)/test_mydatabase?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatalf("データベースへの接続に失敗しました: %v", err)
+	if err := db.InitDatabase(); err != nil {
+		log.Fatalf("データベース接続エラー: %v", err)
 	}
+	log.Println("データベースに接続しました")
 
-	err = db.AutoMigrate(&models.User{})
-	if err != nil {
+	if err := db.DB.AutoMigrate(&models.User{}); err != nil {
 		log.Fatalf("マイグレーションに失敗しました: %v", err)
 	}
 
 	srv := services.NewGoPracticeService(
-		repository.NewGormMicropostRepository(db),
-		repository.NewGormUserRepository(db),
+		repository.NewGormMicropostRepository(db.DB),
+		repository.NewGormUserRepository(db.DB),
 	)
 
 	httpServer, err := ogen.NewServer(srv)

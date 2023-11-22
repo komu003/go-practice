@@ -2,13 +2,13 @@ package integration_tests
 
 import (
 	"app/models"
+	"app/pkg/db"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"net/http"
+	"testing"
 )
 
 func TestAPIUsersGetIntegration(t *testing.T) {
@@ -31,7 +31,7 @@ func TestAPIUsersCountGetIntegration(t *testing.T) {
 		{
 			name: "1ユーザー",
 			setup: func() error {
-				return db.Create(&models.User{Name: "テストユーザー1", Email: "test1@example.com"}).Error
+				return db.DB.Create(&models.User{Name: "テストユーザー1", Email: "test1@example.com"}).Error
 			},
 			expected: 1,
 		},
