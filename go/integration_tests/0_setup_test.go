@@ -27,10 +27,6 @@ func TestMain(m *testing.M) {
 	}
 	log.Println("データベースに接続しました")
 
-	if err := db.DB.AutoMigrate(&models.User{}); err != nil {
-		log.Fatalf("マイグレーションに失敗しました: %v", err)
-	}
-
 	srv := services.NewGoPracticeService(
 		repository.NewGormMicropostRepository(db.DB),
 		repository.NewGormUserRepository(db.DB),
