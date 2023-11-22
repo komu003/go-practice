@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/config"
 	"app/models"
 	"app/pkg/db"
 	"fmt"
@@ -8,6 +9,8 @@ import (
 )
 
 func main() {
+	config.InitConfig()
+
 	if err := db.InitDatabase(); err != nil {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}
