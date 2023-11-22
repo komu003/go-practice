@@ -1,14 +1,7 @@
 package integration_tests
 
 import (
-	"app/config"
-	"app/models"
-	"app/ogen"
-	"app/pkg/db"
-	"app/pkg/middleware"
-	"app/pkg/repository"
-	"app/services"
-	"log"
+	"app/pkg/server"
 	"net/http/httptest"
 	"os"
 	"testing"
@@ -20,26 +13,8 @@ var (
 
 func TestMain(m *testing.M) {
 	os.Setenv("ENV", "test")
-	config.InitConfig()
-
-	if err := db.InitDatabase(); err != nil {
-		log.Fatalf("データベース接続エラー: %v", err)
-	}
-	log.Println("データベースに接続しました")
-
-	srv := services.NewGoPracticeService(
-		repository.NewGormMicropostRepository(db.DB),
-		repository.NewGormUserRepository(db.DB),
-	)
-
-	httpServer, err := ogen.NewServer(srv)
-	if err != nil {
-		log.Fatalf("サーバーの作成に失敗しました: %v", err)
-	}
-
-	wrappedServer := middleware.CorsMiddleware(httpServer)
-
-	testHTTP = httptest.NewServer(wrappedServer)
+	server := server.SetupServer()
+	testHTTP = httptest.NewServer(server)
 
 	code := m.Run()
 

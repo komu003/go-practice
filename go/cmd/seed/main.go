@@ -1,20 +1,14 @@
 package main
 
 import (
-	"app/config"
 	"app/models"
 	"app/pkg/db"
+	"app/pkg/server"
 	"fmt"
-	"log"
 )
 
 func main() {
-	config.InitConfig()
-
-	if err := db.InitDatabase(); err != nil {
-		log.Fatalf("データベース接続エラー: %v", err)
-	}
-	fmt.Println("データベースに接続しました")
+	server.InitializeConfigAndDatabase()
 
 	var users []models.User
 	for i := 1; i <= 3; i++ {
