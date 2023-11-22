@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/config"
 	"app/ogen"
 	"app/pkg/db"
 	"app/pkg/middleware"
@@ -11,6 +12,8 @@ import (
 )
 
 func main() {
+	config.InitConfig()
+
 	if err := db.InitDatabase(); err != nil {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}

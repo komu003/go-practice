@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -12,7 +14,16 @@ import (
 var DB *gorm.DB
 
 func InitDatabase() error {
-	dsn := "root:rootpassword@tcp(mysql)/mydatabase?charset=utf8mb4&parseTime=True&loc=Local"
+	// Viperから設定を取得
+	host := viper.GetString("database.host")
+	port := viper.GetString("database.port")
+	user := viper.GetString("database.user")
+	password := viper.GetString("database.password")
+	name := viper.GetString("database.name")
+
+	// データベース接続文字列を組み立て
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		user, password, host, port, name)
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
