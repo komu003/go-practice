@@ -26,11 +26,11 @@ func main() {
 
 	httpServer, err := ogen.NewServer(srv)
 	if err != nil {
-		log.Fatalf("Failed to create server: %v", err)
+		log.Fatalf("サーバーの作成に失敗しました: %v", err)
 	}
 
 	wrappedServer := middleware.CorsMiddleware(httpServer)
 
-	log.Println("Server is running at http://localhost:8080")
+	log.Println("サーバー実行中：http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", wrappedServer))
 }

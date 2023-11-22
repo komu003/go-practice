@@ -34,7 +34,7 @@ func TestMain(m *testing.M) {
 
 	httpServer, err := ogen.NewServer(srv)
 	if err != nil {
-		log.Fatalf("Failed to create server: %v", err)
+		log.Fatalf("サーバーの作成に失敗しました: %v", err)
 	}
 
 	wrappedServer := middleware.CorsMiddleware(httpServer)
