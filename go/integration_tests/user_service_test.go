@@ -11,11 +11,25 @@ import (
 	"testing"
 )
 
+func setupTestCase(t *testing.T) func(t *testing.T) {
+	tx := db.DB.Begin()
+	if tx.Error != nil {
+		t.Fatalf("トランザクションの開始に失敗しました: %v", tx.Error)
+	}
+
+	return func(t *testing.T) {
+		tx.Rollback()
+	}
+}
+
 func TestAPIUsersGetIntegration(t *testing.T) {
 	t.Skip("未実装")
 }
 
 func TestAPIUsersCountGetIntegration(t *testing.T) {
+	tearDown := setupTestCase(t)
+	defer tearDown(t)
+
 	cases := []struct {
 		name     string
 		setup    func() error
