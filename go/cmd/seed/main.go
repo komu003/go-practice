@@ -2,13 +2,12 @@ package main
 
 import (
 	"app/models"
-	"app/pkg/db"
 	"app/pkg/server"
 	"fmt"
 )
 
 func main() {
-	server.InitializeConfigAndDatabase()
+	db := server.InitializeConfigAndDatabase()
 
 	var users []models.User
 	for i := 1; i <= 3; i++ {
@@ -19,7 +18,7 @@ func main() {
 		users = append(users, user)
 	}
 
-	db.DB.Create(&users)
+	db.Create(&users)
 
 	var microposts []models.Micropost
 	for _, user := range users {
@@ -32,7 +31,7 @@ func main() {
 		}
 	}
 
-	db.DB.Create(&microposts)
+	db.Create(&microposts)
 
 	fmt.Println("シードデータの作成が完了しました。")
 }
