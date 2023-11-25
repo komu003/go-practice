@@ -11,9 +11,7 @@ import (
 	"time"
 )
 
-var DB *gorm.DB
-
-func InitDatabase() error {
+func InitDatabase() (*gorm.DB, error) {
 	// Viperから設定を取得
 	host := viper.GetString("database.host")
 	port := viper.GetString("database.port")
@@ -39,10 +37,9 @@ func InitDatabase() error {
 	})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	DB = db
-
-	return nil
+	// DB接続を返す
+	return db, nil
 }

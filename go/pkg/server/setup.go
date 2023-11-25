@@ -7,16 +7,17 @@ import (
 	"app/pkg/middleware"
 	"app/pkg/repository"
 	"app/services"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 )
 
 func SetupServer() http.Handler {
-	InitializeConfigAndDatabase()
+	dbInstance := InitializeConfigAndDatabase()
 
 	srv := services.NewGoPracticeService(
-		repository.NewGormMicropostRepository(db.DB),
-		repository.NewGormUserRepository(db.DB),
+		repository.NewGormMicropostRepository(dbInstance),
+		repository.NewGormUserRepository(dbInstance),
 	)
 
 	httpServer, err := ogen.NewServer(srv)
@@ -27,11 +28,14 @@ func SetupServer() http.Handler {
 	return middleware.CorsMiddleware(httpServer)
 }
 
-func InitializeConfigAndDatabase() {
+func InitializeConfigAndDatabase() *gorm.DB {
 	config.InitConfig()
 
-	if err := db.InitDatabase(); err != nil {
+	dbInstance, err := db.InitDatabase()
+	if err != nil {
 		log.Fatalf("データベース接続エラー: %v", err)
 	}
 	log.Println("データベースに接続しました")
+
+	return dbInstance
 }
