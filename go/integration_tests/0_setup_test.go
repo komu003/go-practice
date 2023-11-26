@@ -13,6 +13,7 @@ var (
 
 func TestMain(m *testing.M) {
 	os.Setenv("ENV", "test")
+	config.InitConfig()
 	server := server.SetupServer()
 	testHTTP = httptest.NewServer(server)
 

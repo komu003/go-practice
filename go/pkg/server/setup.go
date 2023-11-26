@@ -1,7 +1,6 @@
 package server
 
 import (
-	"app/config"
 	"app/ogen"
 	"app/pkg/db"
 	"app/pkg/middleware"
@@ -13,7 +12,7 @@ import (
 )
 
 func SetupServer() http.Handler {
-	dbInstance := InitializeConfigAndDatabase()
+	dbInstance := InitializeDatabase()
 	return SetupServerWithDB(dbInstance)
 }
 
@@ -31,9 +30,7 @@ func SetupServerWithDB(dbInstance *gorm.DB) http.Handler {
 	return middleware.CorsMiddleware(httpServer)
 }
 
-func InitializeConfigAndDatabase() *gorm.DB {
-	config.InitConfig()
-
+func InitializeDatabase() *gorm.DB {
 	dbInstance, err := db.InitDatabase()
 	if err != nil {
 		log.Fatalf("データベース接続エラー: %v", err)

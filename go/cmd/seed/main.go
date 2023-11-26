@@ -1,13 +1,15 @@
 package main
 
 import (
+	"app/config"
 	"app/models"
 	"app/pkg/server"
 	"fmt"
 )
 
 func main() {
-	db := server.InitializeConfigAndDatabase()
+	config.InitConfig()
+	db := server.InitializeDatabase()
 
 	var users []models.User
 	for i := 1; i <= 3; i++ {
