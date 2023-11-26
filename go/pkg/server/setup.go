@@ -14,13 +14,16 @@ import (
 
 func SetupServer() http.Handler {
 	dbInstance := InitializeConfigAndDatabase()
+	return SetupServerWithDB(dbInstance)
+}
 
-	srv := services.NewGoPracticeService(
-		repository.NewGormMicropostRepository(dbInstance),
-		repository.NewGormUserRepository(dbInstance),
-	)
+func SetupServerWithDB(dbInstance *gorm.DB) http.Handler {
+	micropostRepository := repository.NewGormMicropostRepository(dbInstance)
+	userRepository := repository.NewGormUserRepository(dbInstance)
 
-	httpServer, err := ogen.NewServer(srv)
+	goPracticeService := services.NewGoPracticeService(micropostRepository, userRepository)
+
+	httpServer, err := ogen.NewServer(goPracticeService)
 	if err != nil {
 		log.Fatalf("サーバーの作成に失敗しました: %v", err)
 	}
