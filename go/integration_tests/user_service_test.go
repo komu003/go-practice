@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-func setupServerAndTestCase(t *testing.T) (*httptest.Server, *gorm.DB, func(t *testing.T)) {
+func setupTestCase(t *testing.T) (*httptest.Server, *gorm.DB, func()) {
 	tx := testDB.Begin()
 	if tx.Error != nil {
 		t.Fatalf("トランザクションの開始に失敗しました: %v", tx.Error)
@@ -21,7 +21,7 @@ func setupServerAndTestCase(t *testing.T) (*httptest.Server, *gorm.DB, func(t *t
 
 	testServer := httptest.NewServer(server.SetupServerWithDB(tx))
 
-	return testServer, tx, func(t *testing.T) {
+	return testServer, tx, func() {
 		testServer.Close()
 		tx.Rollback()
 	}
@@ -32,9 +32,6 @@ func TestAPIUsersGetIntegration(t *testing.T) {
 }
 
 func TestAPIUsersCountGetIntegration(t *testing.T) {
-	testHTTP, tx, tearDown := setupServerAndTestCase(t)
-	defer tearDown(t)
-
 	cases := []struct {
 		name     string
 		setup    func(*gorm.DB) error
@@ -58,6 +55,9 @@ func TestAPIUsersCountGetIntegration(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
+			testHTTP, tx, tearDown := setupTestCase(t)
+			defer tearDown()
+
 			require.NoError(t, tc.setup(tx), "テストデータのセットアップに失敗しました")
 
 			url := fmt.Sprintf("%s/api/users/count", testHTTP.URL)
