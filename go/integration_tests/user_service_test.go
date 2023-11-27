@@ -54,13 +54,11 @@ func TestAPIUsersCountGetIntegration(t *testing.T) {
 		{
 			name: "100ユーザー",
 			setup: func(tx *gorm.DB) error {
+				users := make([]models.User, 100)
 				for i := 0; i < 100; i++ {
-					user := models.User{Name: fmt.Sprintf("テストユーザー%d", i+1), Email: fmt.Sprintf("test%d@example.com", i+1)}
-					if err := tx.Create(&user).Error; err != nil {
-						return err
-					}
+					users[i] = models.User{Name: fmt.Sprintf("テストユーザー%d", i+1), Email: fmt.Sprintf("test%d@example.com", i+1)}
 				}
-				return nil
+				return tx.Create(&users).Error
 			},
 			expected: 100,
 		},
