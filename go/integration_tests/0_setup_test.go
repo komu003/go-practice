@@ -1,24 +1,21 @@
 package integration_tests
 
 import (
+	"app/config"
 	"app/pkg/server"
-	"net/http/httptest"
+	"gorm.io/gorm"
 	"os"
 	"testing"
 )
 
-var (
-	testHTTP *httptest.Server
-)
+var testDB *gorm.DB
 
 func TestMain(m *testing.M) {
 	os.Setenv("ENV", "test")
 	config.InitConfig()
-	server := server.SetupServer()
-	testHTTP = httptest.NewServer(server)
+	testDB = server.InitializeDatabase()
 
 	code := m.Run()
 
-	testHTTP.Close()
 	os.Exit(code)
 }

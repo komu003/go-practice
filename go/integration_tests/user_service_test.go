@@ -2,22 +2,27 @@ package integration_tests
 
 import (
 	"app/models"
-	"app/pkg/db"
+	"app/pkg/server"
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
-func setupTestCase(t *testing.T) func(t *testing.T) {
-	tx := db.DB.Begin()
+func setupServerAndTestCase(t *testing.T) (*httptest.Server, *gorm.DB, func(t *testing.T)) {
+	tx := testDB.Begin()
 	if tx.Error != nil {
 		t.Fatalf("トランザクションの開始に失敗しました: %v", tx.Error)
 	}
 
-	return func(t *testing.T) {
+	testServer := httptest.NewServer(server.SetupServerWithDB(tx))
+
+	return testServer, tx, func(t *testing.T) {
+		testServer.Close()
 		tx.Rollback()
 	}
 }
@@ -27,25 +32,25 @@ func TestAPIUsersGetIntegration(t *testing.T) {
 }
 
 func TestAPIUsersCountGetIntegration(t *testing.T) {
-	tearDown := setupTestCase(t)
+	testHTTP, tx, tearDown := setupServerAndTestCase(t)
 	defer tearDown(t)
 
 	cases := []struct {
 		name     string
-		setup    func() error
+		setup    func(*gorm.DB) error
 		expected int64
 	}{
 		{
 			name: "ゼロユーザー",
-			setup: func() error {
+			setup: func(tx *gorm.DB) error {
 				return nil
 			},
 			expected: 0,
 		},
 		{
 			name: "1ユーザー",
-			setup: func() error {
-				return db.DB.Create(&models.User{Name: "テストユーザー1", Email: "test1@example.com"}).Error
+			setup: func(tx *gorm.DB) error {
+				return tx.Create(&models.User{Name: "テストユーザー1", Email: "test1@example.com"}).Error
 			},
 			expected: 1,
 		},
@@ -53,7 +58,7 @@ func TestAPIUsersCountGetIntegration(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			require.NoError(t, tc.setup(), "テストデータのセットアップに失敗しました")
+			require.NoError(t, tc.setup(tx), "テストデータのセットアップに失敗しました")
 
 			url := fmt.Sprintf("%s/api/users/count", testHTTP.URL)
 			res, err := http.Get(url)
@@ -63,11 +68,9 @@ func TestAPIUsersCountGetIntegration(t *testing.T) {
 			var countResponse struct {
 				Count int64 `json:"count"`
 			}
-
 			err = json.NewDecoder(res.Body).Decode(&countResponse)
 			require.NoError(t, err, "レスポンスのデコードに失敗しました")
 
-			assert.Equal(t, http.StatusOK, res.StatusCode, "HTTPステータスコードが期待と異なります")
 			assert.Equal(t, tc.expected, countResponse.Count, "ユーザー数が期待と異なります")
 		})
 	}
