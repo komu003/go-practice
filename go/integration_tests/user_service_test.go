@@ -2,30 +2,14 @@ package integration_tests
 
 import (
 	"app/models"
-	"app/pkg/server"
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 )
-
-func setupTestCase(t *testing.T) (*httptest.Server, *gorm.DB, func()) {
-	tx := testDB.Begin()
-	if tx.Error != nil {
-		t.Fatalf("トランザクションの開始に失敗しました: %v", tx.Error)
-	}
-
-	testServer := httptest.NewServer(server.SetupServerWithDB(tx))
-
-	return testServer, tx, func() {
-		testServer.Close()
-		tx.Rollback()
-	}
-}
 
 func TestAPIUsersGetIntegration(t *testing.T) {
 	t.Skip("未実装")
