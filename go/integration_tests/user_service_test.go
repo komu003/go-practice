@@ -12,7 +12,45 @@ import (
 )
 
 func TestAPIUsersGetIntegration(t *testing.T) {
-	t.Skip("未実装")
+	cases := []struct {
+		name     string
+		setup    func(*gorm.DB) error
+		expected []models.User
+	}{
+		{
+			name: "ゼロユーザー",
+			setup: func(tx *gorm.DB) error {
+				// 何もしない（ユーザーを作成しない）
+				return nil
+			},
+			expected: []models.User{},
+		},
+		{
+			name: "1ユーザー",
+			setup: func(tx *gorm.DB) error {
+				// 1ユーザーを作成
+				user := models.User{Name: "テストユーザー1", Email: "test1@example.com"}
+				return tx.Create(&user).Error
+			},
+			expected: []models.User{
+				{Name: "テストユーザー1", Email: "test1@example.com"},
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			testHTTP, tx, tearDown := setupTestCase(t)
+			defer tearDown()
+
+			require.NoError(t, tc.setup(tx), "テストデータのセットアップに失敗しました")
+
+			url := fmt.Sprintf("%s/api/users", testHTTP.URL)
+			res, err := http.Get(url)
+			require.NoError(t, err, "HTTPリクエストの送信に失敗しました")
+			defer res.Body.Close()
+		})
+	}
 }
 
 func TestAPIUsersCountGetIntegration(t *testing.T) {
