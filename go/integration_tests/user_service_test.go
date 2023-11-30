@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"testing"
+	"time"
 )
 
 func TestAPIUsersGetIntegration(t *testing.T) {
@@ -49,6 +50,23 @@ func TestAPIUsersGetIntegration(t *testing.T) {
 			res, err := http.Get(url)
 			require.NoError(t, err, "HTTPリクエストの送信に失敗しました")
 			defer res.Body.Close()
+
+			var usersResponse []struct {
+				ID        int       `json:"id"`
+				Name      string    `json:"name"`
+				Email     string    `json:"email"`
+				CreatedAt time.Time `json:"createdAt"`
+				UpdatedAt time.Time `json:"updatedAt"`
+			}
+			err = json.NewDecoder(res.Body).Decode(&usersResponse)
+			require.NoError(t, err, "レスポンスのデコードに失敗しました")
+
+			assert.Equal(t, len(tc.expected), len(usersResponse), "レスポンスのユーザー数が期待と異なります")
+
+			for i, user := range usersResponse {
+				assert.Equal(t, tc.expected[i].Name, user.Name, "ユーザー名が期待と異なります")
+				assert.Equal(t, tc.expected[i].Email, user.Email, "ユーザーメールが期待と異なります")
+			}
 		})
 	}
 }
